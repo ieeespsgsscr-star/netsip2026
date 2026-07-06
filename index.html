@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSIP 2026 Badge Maker</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Premium SaaS Background -->
+    <div class="saas-background">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="Netsip%202026%20colorlogo.png" alt="NetSIP 2026 Logo" class="header-logo-img">
+            </div>
+            <div class="header-actions">
+                <a href="https://ieeespsgs.org/" target="_blank" class="btn btn-outline">Visit Website</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section class="hero-section">
+            <div class="hero-title-container">
+                <h1 class="hero-title">Generate Your Pass</h1>
+            </div>
+            <p class="hero-subtitle">New Trends in Signal Processing (NeTSiP 2026) organized by IEEE SPS GS and IEEE NFSU SB, Gandhinagar</p>
+        </section>
+
+        <div class="premium-card">
+            <div class="card-grid">
+                <!-- Left Column: Form -->
+                <section class="form-section">
+                    <form id="badge-form">
+                        <div class="form-group">
+                            <label for="name">Full Name <span class="required">*</span></label>
+                            <input type="text" id="name" placeholder="e.g. Jane Doe" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="position">Position/Description</label>
+                            <input type="text" id="position" placeholder="e.g. SRC Member">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="role">Your Role</label>
+                            <div class="select-wrapper">
+                                <select id="role">
+                                    <option value="Attendee">Attendee</option>
+                                    <option value="Volunteer">Volunteer</option>
+                                    <option value="Organizer">Organizer</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Profile Photo <span class="required">*</span></label>
+                            <div class="file-upload">
+                                <input type="file" id="photo-upload" accept="image/png, image/jpeg" required>
+                                <div class="upload-area" id="upload-area">
+                                    <div class="upload-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                    </div>
+                                    <div class="upload-text">
+                                        <span class="upload-title">Click to upload</span>
+                                        <span class="upload-subtitle">PNG or JPG, up to 5MB</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="download-btn" class="btn btn-download">
+                            Download Badge
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Right Column: Live Preview -->
+                <section class="preview-section">
+                    <div class="canvas-container">
+                        <canvas id="badge-canvas" width="1080" height="1350"></canvas>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cropping Modal -->
+    <div id="crop-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Adjust Photo</h2>
+            <div class="img-container">
+                <img id="image-to-crop" src="">
+            </div>
+            <div class="modal-actions">
+                <button type="button" id="cancel-crop" class="btn btn-outline">Cancel</button>
+                <button type="button" id="apply-crop" class="btn btn-primary">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        IEEE SPS Gujarat
+                        <span class="logo-subtext">Signal Processing Society</span>
+                    </div>
+                    <p class="footer-desc">Advancing signal processing research and education in Gujarat.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/ieee-sps-gs/" target="_blank" aria-label="LinkedIn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                        </a>
+                        <a href="https://www.instagram.com/ieeespsgs" target="_blank" aria-label="Instagram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                        <a href="https://www.facebook.com/ieeespsgs" target="_blank" aria-label="Facebook">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                        </a>
+                        <a href="https://www.youtube.com/@ieeespsgujaratsection5221" target="_blank" aria-label="YouTube">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
+                        </a>
+                        <a href="https://chat.whatsapp.com/CAWme9KKne8Ke5emJtypWy" target="_blank" aria-label="WhatsApp">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">EXPLORE</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://ieeespsgs.org/">Home</a></li>
+                        <li><a href="https://ieeespsgs.org/events">Events</a></li>
+                        <li><a href="https://ieeespsgs.org/research">Research</a></li>
+                        <li><a href="https://ieeespsgs.org/news">News</a></li>
+                        <li><a href="https://ieeespsgs.org/about">About</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h3 class="footer-title">RESOURCES</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://signalprocessingsociety.org/" target="_blank">IEEE SPS Global <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a></li>
+                        <li><a href="https://www.ieee.org/" target="_blank">IEEE.org <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a></li>
+                        <li><a href="https://ieeespsgs.org/newsletter">Newsletter</a></li>
+                        <li><a href="https://ieeespsgs.org/student/resources">Student Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h3 class="footer-title">CONTACT</h3>
+                    <ul class="footer-contact">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            Gujarat, India
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            info.ieeespsgs@gmail.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-newsletter">
+                <p class="newsletter-text">Newsletter &mdash; monthly highlights, no spam.</p>
+                <form class="newsletter-form" onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="your.email@example.com" class="newsletter-input" required>
+                    <button type="submit" class="btn newsletter-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 IEEE Signal Processing Society Gujarat Chapter. All rights reserved.</p>
+                <div class="footer-bottom-actions">
+                    <p class="view-count">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> 
+                        3.1K views
+                    </p>
+                    <button class="scroll-top-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="Scroll to top">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
