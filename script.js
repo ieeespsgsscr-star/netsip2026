@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let logoImage = null;
     let ieeeLogoImage = null;
     
+    let img3 = null;
+    let img4 = null;
+    
     const logoObj = new Image();
     logoObj.onload = () => {
         logoImage = logoObj;
@@ -33,6 +36,20 @@ document.addEventListener('DOMContentLoaded', () => {
         renderBadge();
     };
     ieeeLogoObj.src = 'IEEE%20SPS%20Gujarat%20Section%20Logo%20(RGB).png';
+    
+    const img3Obj = new Image();
+    img3Obj.onload = () => {
+        img3 = img3Obj;
+        renderBadge();
+    };
+    img3Obj.src = 'logo3_clean.png';
+
+    const img4Obj = new Image();
+    img4Obj.onload = () => {
+        img4 = img4Obj;
+        renderBadge();
+    };
+    img4Obj.src = 'logo4_clean.png';
     
     // Draw constants
     const CANVAS_WIDTH = 1080;
@@ -265,9 +282,46 @@ document.addEventListener('DOMContentLoaded', () => {
         drawNeuralNetwork(ctx, CANVAS_WIDTH, CANVAS_HEIGHT);
         
         // Event Title Logos
-        if (logoImage && ieeeLogoImage) {
-            // NetSIP logo is typically wide, IEEE is more square
-            // We'll set specific target widths and preserve aspect ratio
+        if (logoImage && ieeeLogoImage && img3 && img4) {
+            const w1 = 260;
+            const h1 = (logoImage.height / logoImage.width) * w1;
+            
+            const w2 = 140;
+            const h2 = (ieeeLogoImage.height / ieeeLogoImage.width) * w2;
+            
+            const w3 = 280;
+            const h3 = (img3.height / img3.width) * w3;
+            
+            const w4 = 180;
+            const h4 = (img4.height / img4.width) * w4;
+            
+            const spacing = 40;
+            const totalWidth = w1 + w2 + w3 + w4 + (spacing * 3);
+            const startX = (CANVAS_WIDTH - totalWidth) / 2;
+            
+            const centerY = 160;
+            
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            // Use multiply to remove white backgrounds from JPEGs seamlessly
+            ctx.globalCompositeOperation = 'multiply';
+            
+            let currentX = startX;
+            ctx.drawImage(logoImage, currentX, centerY - h1 / 2, w1, h1);
+            currentX += w1 + spacing;
+            
+            ctx.drawImage(ieeeLogoImage, currentX, centerY - h2 / 2, w2, h2);
+            currentX += w2 + spacing;
+            
+            ctx.drawImage(img3, currentX, centerY - h3 / 2, w3, h3);
+            currentX += w3 + spacing;
+            
+            ctx.drawImage(img4, currentX, centerY - h4 / 2, w4, h4);
+            
+            ctx.globalCompositeOperation = 'source-over';
+        } else if (logoImage && ieeeLogoImage) {
+            // fallback
             const netsipWidth = 360;
             const netsipHeight = (logoImage.height / logoImage.width) * netsipWidth;
             
@@ -278,21 +332,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const totalWidth = netsipWidth + spacing + ieeeWidth;
             const startX = (CANVAS_WIDTH - totalWidth) / 2;
             
-            // Vertically center them relative to a fixed Y coordinate
             const centerY = 160;
             
-            // We use image smoothing for better quality when scaling
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
             
+            ctx.globalCompositeOperation = 'multiply';
             ctx.drawImage(logoImage, startX, centerY - netsipHeight / 2, netsipWidth, netsipHeight);
             ctx.drawImage(ieeeLogoImage, startX + netsipWidth + spacing, centerY - ieeeHeight / 2, ieeeWidth, ieeeHeight);
-            
-        } else if (logoImage) {
-            const logoWidth = 420;
-            const logoHeight = (logoImage.height / logoImage.width) * logoWidth;
-            const logoX = (CANVAS_WIDTH - logoWidth) / 2;
-            ctx.drawImage(logoImage, logoX, 100, logoWidth, logoHeight);
+            ctx.globalCompositeOperation = 'source-over';
         }
         
         // Draw Photo area
