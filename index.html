@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Hidden QR Code container (rendered offscreen, composited onto badge canvas) -->
+    <div id="qr-container" style="position:absolute;left:-9999px;top:-9999px;visibility:hidden;"></div>
+
     <!-- Premium SaaS Background -->
     <div class="saas-background">
         <div class="glow-orb orb-1"></div>
@@ -212,6 +215,7 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

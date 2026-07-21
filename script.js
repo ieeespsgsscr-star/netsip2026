@@ -24,6 +24,39 @@ document.addEventListener('DOMContentLoaded', () => {
     let img4 = null;
     let bannerImage = null;
 
+    // QR Code — generated once and cached as an Image object
+    let qrImage = null;
+
+    function generateQRCode() {
+        return new Promise((resolve) => {
+            const container = document.getElementById('qr-container');
+            container.innerHTML = ''; // Clear previous
+
+            // qrcode.js renders a <canvas> (or <img>) into the container
+            const qr = new QRCode(container, {
+                text: 'https://ieeespsgs.org/',
+                width: 400,
+                height: 400,
+                colorDark: '#0a1a3a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H,
+            });
+
+            // qrcode.js renders asynchronously – poll until canvas/img appears
+            const poll = setInterval(() => {
+                const qrCanvas = container.querySelector('canvas');
+                const qrImg = container.querySelector('img');
+                const src = qrCanvas ? qrCanvas.toDataURL() : (qrImg ? qrImg.src : null);
+                if (src && src !== 'data:,') {
+                    clearInterval(poll);
+                    const img = new Image();
+                    img.onload = () => { qrImage = img; resolve(); };
+                    img.src = src;
+                }
+            }, 50);
+        });
+    }
+
     const logoObj = new Image();
     logoObj.onload = () => {
         logoImage = logoObj;
@@ -175,6 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initCanvas() {
         // Ensure fonts are loaded before initial render if possible
         await document.fonts.ready;
+        // Pre-generate the QR code so it's ready for first render
+        await generateQRCode();
         renderBadge();
     }
 
@@ -487,58 +522,122 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Footer section divider - make it a subtle gradient line
-        const dividerGrad = ctx.createLinearGradient(150, 1130, CANVAS_WIDTH - 150, 1130);
+        const dividerY = 1060;
+        const dividerGrad = ctx.createLinearGradient(80, dividerY, CANVAS_WIDTH - 80, dividerY);
         dividerGrad.addColorStop(0, 'rgba(226, 232, 240, 0)');
         dividerGrad.addColorStop(0.5, 'rgba(203, 213, 225, 1)');
         dividerGrad.addColorStop(1, 'rgba(226, 232, 240, 0)');
 
         ctx.beginPath();
-        ctx.moveTo(150, 1130);
-        ctx.lineTo(CANVAS_WIDTH - 150, 1130);
+        ctx.moveTo(80, dividerY);
+        ctx.lineTo(CANVAS_WIDTH - 80, dividerY);
         ctx.strokeStyle = dividerGrad;
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Event Details Footer
-        const footerY = 1180;
+        // ── QR Code Section ──────────────────────────────────────────────────
+        // QR sits bottom-center inside footer strip (1060-1350)
+        const qrSize = 160;           // QR image size on canvas
+        const qrPad = 14;             // padding inside white card
+        const cardW = qrSize + qrPad * 2;   // 188
+        const cardH = qrSize + qrPad * 2;   // 188
+        const labelH = 42;            // dark SCAN ME bar
+        const totalQRH = labelH + cardH;    // 230
+        const qrCenterX = CANVAS_WIDTH / 2;
+        // Center the QR block in the footer zone (1060..1350 = 290px tall)
+        const qrTopY = 1060 + (290 - totalQRH) / 2;  // ~1090
 
-        // Date
+        if (qrImage) {
+            ctx.save();
+
+            // ── SCAN ME label (rounded top corners) ──
+            const labelW = cardW;
+            const labelX = qrCenterX - labelW / 2;
+            const labelY = qrTopY;
+
+            ctx.shadowColor = 'rgba(0,0,0,0.20)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetY = 5;
+
+            ctx.fillStyle = '#0a1a3a';
+            ctx.beginPath();
+            ctx.moveTo(labelX + 10, labelY);
+            ctx.lineTo(labelX + labelW - 10, labelY);
+            ctx.quadraticCurveTo(labelX + labelW, labelY, labelX + labelW, labelY + 10);
+            ctx.lineTo(labelX + labelW, labelY + labelH);
+            ctx.lineTo(labelX, labelY + labelH);
+            ctx.lineTo(labelX, labelY + 10);
+            ctx.quadraticCurveTo(labelX, labelY, labelX + 10, labelY);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 18px Inter';
+            ctx.textAlign = 'center';
+            if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '3px';
+            ctx.fillText('SCAN ME', qrCenterX, labelY + labelH - 13);
+            if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '0px';
+
+            // ── White card (rounded bottom corners) ──
+            const cardX = qrCenterX - cardW / 2;
+            const cardY = labelY + labelH;
+
+            ctx.shadowColor = 'rgba(0,0,0,0.12)';
+            ctx.shadowBlur = 16;
+            ctx.shadowOffsetY = 4;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(cardX, cardY);
+            ctx.lineTo(cardX + cardW, cardY);
+            ctx.lineTo(cardX + cardW, cardY + cardH - 10);
+            ctx.quadraticCurveTo(cardX + cardW, cardY + cardH, cardX + cardW - 10, cardY + cardH);
+            ctx.lineTo(cardX + 10, cardY + cardH);
+            ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - 10);
+            ctx.lineTo(cardX, cardY);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+            // ── Draw QR image ──
+            ctx.drawImage(qrImage, cardX + qrPad, cardY + qrPad, qrSize, qrSize);
+
+            ctx.restore();
+        }
+
+        // ── Date (bottom-left) ──
+        const footerY = 1230;
         ctx.textAlign = 'left';
-        ctx.fillStyle = '#64748b'; // Slate 500
-        ctx.font = '700 15px Inter';
+        ctx.fillStyle = '#64748b';
+        ctx.font = '700 14px Inter';
         if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '2px';
-        ctx.fillText('DATE', 120, footerY); // Pushed further out
-
+        ctx.fillText('DATE', 80, footerY);
         if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '0px';
-        ctx.fillStyle = '#1e293b'; // Slate 800
-        ctx.font = '800 24px Inter';
-        ctx.fillText('24 - 25 July', 120, footerY + 35);
-        ctx.fillStyle = '#4f46e5'; // Indigo accent
-        ctx.fillText(' 2026', 120 + ctx.measureText('24 - 25 July').width, footerY + 35);
+        ctx.fillStyle = '#1e293b';
+        ctx.font = '800 22px Inter';
+        ctx.fillText('24 - 25 July', 80, footerY + 32);
+        ctx.fillStyle = '#4f46e5';
+        ctx.fillText(' 2026', 80 + ctx.measureText('24 - 25 July').width, footerY + 32);
 
-        // Venue
+        // ── Venue (bottom-right) ──
         ctx.textAlign = 'right';
         ctx.fillStyle = '#64748b';
-        ctx.font = '700 15px Inter';
+        ctx.font = '700 14px Inter';
         if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '2px';
-        ctx.fillText('VENUE', CANVAS_WIDTH - 120, footerY);
-
+        ctx.fillText('VENUE', CANVAS_WIDTH - 80, footerY);
         if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '0px';
         ctx.fillStyle = '#1e293b';
-        ctx.font = '800 24px Inter';
-        ctx.fillText('NFSU, Gandhinagar', CANVAS_WIDTH - 120, footerY + 35);
+        ctx.font = '800 22px Inter';
+        ctx.fillText('NFSU, Gandhinagar', CANVAS_WIDTH - 80, footerY + 32);
 
-        // Contact (Center)
+        // ── Website (bottom-center small) ──
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#64748b';
-        ctx.font = '700 15px Inter';
-        if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '2px';
-        ctx.fillText('CONTACT', CANVAS_WIDTH / 2, footerY);
-
-        if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '0px';
-        ctx.fillStyle = '#1e293b';
-        ctx.font = '700 20px Inter';
-        ctx.fillText('ieeespsgs@gmail.com', CANVAS_WIDTH / 2, footerY + 35);
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 18px Inter';
+        ctx.fillText('ieeespsgs.org', CANVAS_WIDTH / 2, 1310);
 
         // Add a premium border to the whole canvas (gradient)
         const borderGrad = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
